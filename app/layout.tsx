@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Header from "@/component/header";
 import Footer from "@/component/footer";
 import "./globals.css";
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: "げーむらんく | あなたの配信画面を華やかにします！",
@@ -15,17 +15,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-        />
-      </head>
-      <body>
-        <Header />
-        {children}
-        <Footer />
-      </body>
+      <ClerkProvider>
+        <head>
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+          />
+        </head>
+        <body>
+          {children}
+          <Footer />
+        </body>
+      </ClerkProvider>
     </html>
   );
 }

@@ -20,10 +20,10 @@ export default function About() {
           >
             <div className="flex items-end justify-center">
               <h1 className="text-5xl font-bold">01.</h1>
-              <p className="text-3xl">ウィッシュリストに参加する</p>
+              <p className="text-3xl">ウェイトリストに参加する</p>
             </div>
             <p className="text-center mt-2">
-              &quot;サービスを利用する&quot;ボタンよりメールアドレスなどを入力して待機列に登録してください。
+              &quot;<span className="font-bold">ウェイトリストに登録</span>&quot;ボタンよりメールアドレスなどを入力して待機列に登録してください。
             </p>
           </motion.li>
           <motion.div
