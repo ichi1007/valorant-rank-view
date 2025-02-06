@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import {
   Sidebar,
   SidebarBody,
@@ -10,15 +11,19 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { Dhome } from "@/component/dashboard/Dhome";
+import { Setting } from "@/component/dashboard/setting";
 
 export function SidebarComponent() {
-  const { user } = useUser(); // フックを先に呼び出す
+  const { user } = useUser();
   const [open, setOpen] = useState(false);
+  const [activeComponent, setActiveComponent] = useState<"dashboard" | "settings">("dashboard");
   
   const button = [
     {
       label: "新規作成",
       href: "#",
+      component: "dashboard" as const,
       icon: (
         <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -26,6 +31,7 @@ export function SidebarComponent() {
     {
       label: "カスタマイズ",
       href: "#",
+      component: "settings" as const,
       icon: (
         <Settings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
@@ -47,7 +53,12 @@ export function SidebarComponent() {
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {button.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
+                <div
+                  key={idx}
+                  onClick={() => setActiveComponent(link.component)}
+                >
+                  <SidebarLink link={link} />
+                </div>
               ))}
             </div>
           </div>
@@ -75,17 +86,21 @@ export function SidebarComponent() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
+      <Dashboard activeComponent={activeComponent} />
     </div>
   );
 }
 
 export const Logo = () => {
   return (
-    <h1
-      className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20 cursor-default"
-    >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+    <h1 className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20 cursor-default">
+      <Image
+        src="/げーむらんくIcon.svg"
+        alt="げーむらんく Icon"
+        width={24}
+        height={20}
+        className="dark:invert"
+      />
       <motion.span
         animate={{
           display: "inline-block",
@@ -109,32 +124,33 @@ export const LogoIcon = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+      <Image
+        src="/げーむらんくIcon.svg"
+        alt="げーむらんく"
+        width={24}
+        height={20}
+        className="dark:invert"
+      />
     </Link>
   );
 };
 
-// Dummy dashboard component with content
-const Dashboard = () => {
+const Dashboard = ({ activeComponent }: { activeComponent: "dashboard" | "settings" }) => {
+  const renderComponent = () => {
+    switch (activeComponent) {
+      case "dashboard":
+        return <Dhome />;
+      case "settings":
+        return <Setting />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="flex flex-1">
       <div className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full">
-        <div className="flex gap-2">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div
-              key={`first-array-${index}`}
-              className="h-20 w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-            ></div>
-          ))}
-        </div>
-        <div className="flex gap-2 flex-1">
-          {Array.from({ length: 2 }).map((_, index) => (
-            <div
-              key={`second-array-${index}`}
-              className="h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800 animate-pulse"
-            ></div>
-          ))}
-        </div>
+        {renderComponent()}
       </div>
     </div>
   );
