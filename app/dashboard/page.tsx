@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Header from "@/component/dashboard/SignInHeader";
+import { SidebarComponent } from "./Sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard | げーむらんく",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <div>
-      <Header />
+      <SidebarComponent />
     </div>
   );
 }

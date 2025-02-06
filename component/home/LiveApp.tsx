@@ -95,7 +95,7 @@ export default function LiveApp() {
   return (
     <div
       id="LiveApp"
-      className="min-h-[80vh] flex flex-col items-center justify-center"
+      className="min-h-[80vh] flex flex-col items-center justify-center mb-10"
     >
       <div className="flex flex-wrap items-center justify-center mt-16 mb-12">
         <h1 className="text-center text-4xl font-bold mb-4 px-1">
