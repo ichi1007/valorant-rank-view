@@ -21,7 +21,7 @@ export function SidebarComponent() {
   
   const button = [
     {
-      label: "新規作成",
+      label: "アプリ",
       href: "#",
       component: "dashboard" as const,
       icon: (

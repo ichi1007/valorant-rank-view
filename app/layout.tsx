@@ -5,7 +5,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: "げーむらんく | あなたの配信画面を華やかにします！",
-  description: "Develop by ichi10.com",
+  description: "Develop by ichi",
 };
 
 export default function RootLayout({

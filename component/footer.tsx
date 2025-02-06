@@ -43,8 +43,7 @@ export default function Footer() {
       <footer className="w-full bg-white border-t text-black text-center py-5 text-sm">
         <p>
           © {new Date().getFullYear()}{" "}
-          <Link href="https://ichi10.com" target="_blank">ichi10</Link>, Solo Dev. All Rights
-          Reserved.
+          <Link href="https://ichi10.com" target="_blank">ichi</Link>, Dev.
         </p>
       </footer>
     </div>

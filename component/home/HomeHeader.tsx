@@ -46,9 +46,20 @@ export default function Header() {
       <div>
         <SignedOut>
           <SignInButton />
+          <Link
+            href="/waitlist"
+            className="ml-5 bg-gray-900 text-white px-2 py-[3px] rounded-md"
+          >
+            Join Waitlist
+          </Link>
         </SignedOut>
         <SignedIn>
-          <Link href="/dashboard" className="mr-5">ダッシュボード</Link>
+          <Link
+            href="/dashboard"
+            className="mr-5 bg-gray-900 text-white px-2 py-[3px] rounded-md"
+          >
+            ダッシュボード
+          </Link>
           <SignOutButton />
         </SignedIn>
       </div>
