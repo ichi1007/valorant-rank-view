@@ -9,7 +9,7 @@ import {
 
 export default function Header() {
   return (
-    <header className="w-full max-w-[1000px] flex justify-between items-center px-5 py-5 mx-auto">
+    <header className="sticky top-0 !bg-white z-50 w-full max-w-[1000px] flex justify-between items-center px-5 py-5 mx-auto">
       <div className="flex items-end">
         <h1>
           <Link href="/" className="text-xl font-bold">

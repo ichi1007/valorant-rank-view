@@ -120,9 +120,7 @@ export default function LiveApp() {
                       : undefined
                   }
                   whileInView={
-                    !isMobile || index === 0 
-                      ? { opacity: 1, y: 0 }
-                      : undefined
+                    !isMobile || index === 0 ? { opacity: 1, y: 0 } : undefined
                   }
                   onViewportEnter={() => {
                     if (index === 0) setFirstCardInView(true);

@@ -112,7 +112,7 @@ export const Logo = () => {
         }}
         className="font-medium text-black dark:text-white whitespace-pre inline-block !m-0 !py-0 !pr-0 pl-3"
       >
-        げーむらんく
+        <Link href="/" >げーむらんく</Link>
       </motion.span>
     </h1>
   );
