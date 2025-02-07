@@ -21,7 +21,7 @@ export function SidebarComponent() {
   
   const button = [
     {
-      label: "アプリ",
+      label: "Valorant",
       href: "#",
       component: "dashboard" as const,
       icon: (
@@ -29,7 +29,7 @@ export function SidebarComponent() {
       ),
     },
     {
-      label: "カスタマイズ",
+      label: "coming soon...",
       href: "#",
       component: "settings" as const,
       icon: (
