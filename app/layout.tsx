@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/component/footer";
-import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs';
+import { jaJP } from '@clerk/localizations'
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "げーむらんく | あなたの配信画面を華やかにします！",
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <ClerkProvider>
+      <ClerkProvider localization={jaJP}>
         <head>
           <link
             rel="stylesheet"
