@@ -7,15 +7,15 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get("name");
     const tag = searchParams.get("tag");
-    const apiKey = request.headers.get("X-API-Key");
 
-    if (!apiKey) {
-      return NextResponse.json({
-        status: 400,
-        data: null,
-        error: "APIキーが必要です",
-      });
+    // 認証ヘッダーから APIキーを取得
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader) {
+      return NextResponse.json({ error: "APIキーが必要です" }, { status: 401 });
     }
+
+    // Basic認証形式からAPIキーを抽出
+    const apiKey = atob(authHeader.replace("Basic ", ""));
 
     if (!name || !tag) {
       return NextResponse.json({

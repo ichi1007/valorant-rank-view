@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
+import Cookies from "js-cookie";
 
 interface RankData {
   status: number;
@@ -21,35 +23,39 @@ interface RankData {
   } | null;
 }
 
-interface SavedPlayer {
-  name: string;
-  tag: string;
-  lastUpdate: string;
-}
+const SkeletonLoading = () => (
+  <div className="animate-pulse">
+    {/* シンプルな大きな四角形 */}
+    <div className="w-full h-48 bg-gray-200 dark:bg-neutral-700 rounded-lg" />
+  </div>
+);
 
-export const Dhome = () => {
-  const [gameName, setGameName] = useState("");
-  const [gameId, setGameId] = useState("");
-  const [apiKey, setApiKey] = useState("");
+export const Dvalorant = () => {
+  const { user } = useUser();
+  const [gameName, setGameName] = useState<string>("");
+  const [gameId, setGameId] = useState<string>("");
+  const [apiKey, setApiKey] = useState<string>("");
+  const [showApiKey, setShowApiKey] = useState<boolean>(false);
   const [rankData, setRankData] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
 
-  // LocalStorageの初期化をuseEffect内に移動
-  useEffect(() => {
-    const savedApiKey = localStorage.getItem("henrik_api_key");
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-    }
+  // UserIDをCookieから管理
+  const [userId] = useState<string>(() => {
+    const savedId = Cookies.get("user_id");
+    if (savedId) return savedId;
+    const newId = crypto.randomUUID();
+    Cookies.set("user_id", newId, { expires: 365 });
+    return newId;
+  });
 
-    const savedPlayer = localStorage.getItem("saved_player");
-    if (savedPlayer) {
-      const { name, tag } = JSON.parse(savedPlayer) as SavedPlayer;
-      setGameName(name);
-      setGameId(tag);
-      setIsRegistered(true);
-    }
+  // Cookieからゲーム情報を復元
+  useEffect(() => {
+    const savedGameName = Cookies.get("game_name");
+    const savedGameId = Cookies.get("game_id");
+    if (savedGameName) setGameName(savedGameName);
+    if (savedGameId) setGameId(savedGameId);
   }, []);
 
   const handleSearch = useCallback(
@@ -62,11 +68,16 @@ export const Dhome = () => {
       setError(null);
 
       try {
+        // APIキーをBase64でエンコード
+        const encodedApiKey = btoa(apiKey.trim());
+
         const response = await fetch(`/api/rank?name=${name}&tag=${tag}`, {
           headers: {
-            "X-API-Key": apiKey,
+            "Content-Type": "application/json",
+            Authorization: `Basic ${encodedApiKey}`, // APIキーをBase64エンコードして送信
           },
         });
+
         const data = await response.json();
         if (data.status !== 200) {
           throw new Error(data.error || "ランク情報の取得に失敗しました");
@@ -81,34 +92,134 @@ export const Dhome = () => {
     [apiKey]
   ); // apiKeyを依存配列に追加
 
-  // 保存済みデータの読み込みと検索を分離
+  // プロフィールデータの初期取得を修正
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const savedId = Cookies.get("user_id");
+        if (!savedId) return;
+
+        const response = await fetch(`/api/profile?userId=${savedId}`);
+        const data = await response.json();
+
+        if (response.ok && data.profile) {
+          setGameName(data.profile.game_name);
+          setGameId(data.profile.game_id);
+          setApiKey(data.profile.api_key || "");
+          setIsRegistered(true);
+        }
+      } catch (error) {
+        console.error("データの取得に失敗しました:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, []); // 初回のみ実行
+
+  // ランク情報の取得を別のuseEffectで管理
   useEffect(() => {
     if (isRegistered && gameName && gameId && apiKey) {
-      handleSearch(gameName, gameId);
+      // すでにランクデータがある場合は再取得しない
+      if (!rankData) {
+        handleSearch(gameName, gameId);
+      }
     }
-  }, [isRegistered, gameName, gameId, apiKey, handleSearch]);
+  }, [isRegistered, gameName, gameId, apiKey, rankData, handleSearch]);
 
-  // APIキーの保存
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem("henrik_api_key", apiKey);
-      alert("APIキーを保存しました");
+  // DynamoDBからAPIキーを取得
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const userId = `${gameName}#${gameId}`;
+        const response = await fetch(`/api/apikey?userId=${userId}`);
+        const data = await response.json();
+        if (data.hashedApiKey) {
+          setApiKey(data.hashedApiKey);
+        }
+      } catch (error) {
+        console.error("APIキーの取得に失敗しました:", error);
+      }
+    };
+
+    if (isRegistered && gameName && gameId) {
+      fetchApiKey();
+    }
+  }, [isRegistered, gameName, gameId]);
+
+  // 登録解除時の処理を修正
+  const handleUnregister = async () => {
+    try {
+      // プロフィールを初期化
+      const response = await fetch("/api/profile", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("プロフィールの削除に失敗しました");
+      }
+
+      // 状態をリセット
+      setIsRegistered(false);
+      setGameName("");
+      setGameId("");
+      setRankData(null);
+      setApiKey("");
+      Cookies.remove("game_name");
+      Cookies.remove("game_id");
+    } catch (error) {
+      console.error("登録解除に失敗しました:", error);
+      alert("登録解除に失敗しました");
     }
   };
 
+  // ゲーム情報とAPIキーを同時に保存
+  const saveGameInfo = async () => {
+    if (!gameName || !gameId) {
+      alert("ゲーム名とIDを入力してください");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: userId, // UUIDを使用
+          clerk_name: user?.username || "anonymous",
+          game_name: gameName,
+          game_id: gameId,
+          // APIキーは任意項目として送信
+          ...(apiKey && { api_key: apiKey.trim() }),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "プロフィールの保存に失敗しました");
+      }
+
+      setIsRegistered(true);
+      alert("情報を保存しました");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "保存に失敗しました");
+      console.error("Save error:", error);
+    }
+  };
+
+  // フォームの送信処理を修正
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // プレイヤー情報を保存
-    const playerData: SavedPlayer = {
-      name: gameName,
-      tag: gameId,
-      lastUpdate: new Date().toISOString(),
-    };
-    localStorage.setItem("saved_player", JSON.stringify(playerData));
-    setIsRegistered(true);
-
-    await handleSearch(gameName, gameId);
+    await saveGameInfo();
+    if (apiKey && gameName && gameId) {
+      await handleSearch(gameName, gameId);
+    }
   };
 
   return (
@@ -140,7 +251,7 @@ export const Dhome = () => {
               </label>
               <div className="flex gap-2">
                 <input
-                  type="password"
+                  type={showApiKey ? "text" : "password"}
                   id="apiKey"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
@@ -149,10 +260,10 @@ export const Dhome = () => {
                 />
                 <button
                   type="button"
-                  onClick={saveApiKey}
-                  className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
                 >
-                  保存
+                  {showApiKey ? "隠す" : "表示"}
                 </button>
               </div>
             </div>
@@ -198,13 +309,7 @@ export const Dhome = () => {
               {isRegistered && (
                 <button
                   type="button"
-                  onClick={() => {
-                    localStorage.removeItem("saved_player");
-                    setIsRegistered(false);
-                    setGameName("");
-                    setGameId("");
-                    setRankData(null);
-                  }}
+                  onClick={handleUnregister}
                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
                 >
                   登録解除
@@ -217,7 +322,7 @@ export const Dhome = () => {
         {/* 右側：プレビュー */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
           <h2 className="text-xl font-semibold mb-4">プレビュー</h2>
-          {loading && <div>読み込み中...</div>}
+          {loading && <SkeletonLoading />}
           {error && <div className="text-red-500">{error}</div>}
           {rankData && rankData.data && (
             <div className="space-y-4">
@@ -267,9 +372,7 @@ export const Dhome = () => {
             </div>
           )}
           {!loading && (!rankData || !rankData.data) && !error && (
-            <div className="text-gray-500 dark:text-gray-400">
-              プレイヤーを検索してください
-            </div>
+            <SkeletonLoading />
           )}
         </div>
       </div>

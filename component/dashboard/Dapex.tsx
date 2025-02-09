@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Setting = () => {
+export const Dapex = () => {
   return (
     <div className="w-full h-full">
       <h1 className="text-2xl font-bold mb-6">カスタマイズ設定</h1>

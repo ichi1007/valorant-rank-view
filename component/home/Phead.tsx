@@ -7,7 +7,7 @@ import SiteLogo from "@/public/げーむらんくIcon.svg";
 
 export default function Phead() {
   return (
-    <header className="relative h-[92vh] w-full overflow-hidden">
+    <header className="relative h-[92vh] w-full overflow-hidden bg-transparent">
       <RetroGrid className="absolute inset-0" />
       <div className="relative flex h-full w-full items-center justify-center">
         <div className="text-center z-10">

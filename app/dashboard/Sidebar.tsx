@@ -11,8 +11,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { Dhome } from "@/component/dashboard/Dhome";
-import { Setting } from "@/component/dashboard/setting";
+import { Dvalorant } from "@/component/dashboard/Dvalorant";
+import { Dapex } from "@/component/dashboard/Dapex";
 
 export function SidebarComponent() {
   const { user } = useUser();
@@ -139,9 +139,9 @@ const Dashboard = ({ activeComponent }: { activeComponent: "dashboard" | "settin
   const renderComponent = () => {
     switch (activeComponent) {
       case "dashboard":
-        return <Dhome />;
+        return <Dvalorant />;
       case "settings":
-        return <Setting />;
+        return <Dapex />;
       default:
         return null;
     }
