@@ -3,6 +3,8 @@ import Link from "next/link";
 import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import Cookies from "js-cookie";
+import { Toast } from "@/component/ui/Toast";
+import { RefreshCw } from "lucide-react"; // Lucideアイコンをインポート
 
 interface RankData {
   status: number;
@@ -40,6 +42,22 @@ export const Dvalorant = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+    isVisible: boolean;
+  }>({
+    message: "",
+    type: "success",
+    isVisible: false,
+  });
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({ message, type, isVisible: true });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, isVisible: false }));
+    }, 3000);
+  };
 
   // UserIDをCookieから管理
   const [userId] = useState<string>(() => {
@@ -179,7 +197,7 @@ export const Dvalorant = () => {
   // ゲーム情報とAPIキーを同時に保存
   const saveGameInfo = async () => {
     if (!gameName || !gameId) {
-      alert("ゲーム名とIDを入力してください");
+      showToast("ゲーム名とIDを入力してください", "error");
       return;
     }
 
@@ -206,9 +224,12 @@ export const Dvalorant = () => {
       }
 
       setIsRegistered(true);
-      alert("情報を保存しました");
+      showToast("情報を保存しました", "success");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "保存に失敗しました");
+      showToast(
+        error instanceof Error ? error.message : "保存に失敗しました",
+        "error"
+      );
       console.error("Save error:", error);
     }
   };
@@ -222,10 +243,37 @@ export const Dvalorant = () => {
     }
   };
 
+  // リフレッシュ機能を修正
+  const handleRefresh = async () => {
+    if (!gameName || !gameId || !apiKey) {
+      showToast("プレイヤー情報が不足しています", "error");
+      return;
+    }
+    // 一旦データをクリア
+    setRankData(null);
+    setLoading(true);
+
+    try {
+      await handleSearch(gameName, gameId);
+      showToast("データを更新しました", "success");
+    } catch {
+      showToast("更新に失敗しました", "error");
+    }
+  };
+
+  // ランク情報の取得を修正
+  useEffect(() => {
+    if (isRegistered && gameName && gameId && apiKey) {
+      // rankDataがnullの時のみ取得
+      if (!rankData) {
+        handleSearch(gameName, gameId);
+      }
+    }
+  }, [isRegistered, gameName, gameId, apiKey, rankData, handleSearch]);
+
   return (
     <div className="w-full h-full">
       <h1 className="text-2xl font-bold mb-6">ランク情報</h1>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 左側：フォーム */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
@@ -321,7 +369,22 @@ export const Dvalorant = () => {
 
         {/* 右側：プレビュー */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
-          <h2 className="text-xl font-semibold mb-4">プレビュー</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">プレビュー</h2>
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+              title="更新"
+            >
+              <RefreshCw
+                className={`w-5 h-5 text-gray-600 dark:text-gray-400 ${
+                  loading ? "animate-spin" : ""
+                }`}
+              />
+            </button>
+          </div>
+
           {loading && <SkeletonLoading />}
           {error && <div className="text-red-500">{error}</div>}
           {rankData && rankData.data && (
@@ -376,6 +439,12 @@ export const Dvalorant = () => {
           )}
         </div>
       </div>
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
+      />
     </div>
   );
 };
