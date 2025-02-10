@@ -18,8 +18,10 @@ import ValorantLogo from "@/public/V_Bug_Positive_Red.png";
 export function SidebarComponent() {
   const { user } = useUser();
   const [open, setOpen] = useState(false);
-  const [activeComponent, setActiveComponent] = useState<"dashboard" | "settings">("dashboard");
-  
+  const [activeComponent, setActiveComponent] = useState<
+    "dashboard" | "settings"
+  >("dashboard");
+
   const button = [
     {
       label: "Valorant",
@@ -60,7 +62,10 @@ export function SidebarComponent() {
               {button.map((link, idx) => (
                 <div
                   key={idx}
-                  onClick={() => setActiveComponent(link.component)}
+                  onClick={() => {
+                    setActiveComponent(link.component);
+                    setOpen(false); // サイドバーを閉じる
+                  }}
                 >
                   <SidebarLink link={link} />
                 </div>
@@ -117,7 +122,7 @@ export const Logo = () => {
         }}
         className="font-medium text-black dark:text-white whitespace-pre inline-block !m-0 !py-0 !pr-0 pl-3"
       >
-        <Link href="/" >げーむらんく</Link>
+        <Link href="/">げーむらんく</Link>
       </motion.span>
     </h1>
   );
@@ -140,7 +145,11 @@ export const LogoIcon = () => {
   );
 };
 
-const Dashboard = ({ activeComponent }: { activeComponent: "dashboard" | "settings" }) => {
+const Dashboard = ({
+  activeComponent,
+}: {
+  activeComponent: "dashboard" | "settings";
+}) => {
   const renderComponent = () => {
     switch (activeComponent) {
       case "dashboard":

@@ -305,6 +305,7 @@ export const Dvalorant = () => {
                   onChange={(e) => setApiKey(e.target.value)}
                   className="flex-1 p-2 border rounded-md dark:border-neutral-700 dark:bg-white"
                   required
+                  autoComplete="off" // ここを追加
                 />
                 <button
                   type="button"
