@@ -6,13 +6,14 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@/component/dashboard/sidebar";
-import { LayoutDashboard, Settings } from "lucide-react";
+import { CaseSensitive } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Dvalorant } from "@/component/dashboard/Dvalorant";
 import { Dapex } from "@/component/dashboard/Dapex";
+import ValorantLogo from "@/public/V_Bug_Positive_Red.png";
 
 export function SidebarComponent() {
   const { user } = useUser();
@@ -25,7 +26,11 @@ export function SidebarComponent() {
       href: "#",
       component: "dashboard" as const,
       icon: (
-        <LayoutDashboard className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <Image
+          src={ValorantLogo}
+          alt={"ValorantLogo"}
+          className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0"
+        ></Image>
       ),
     },
     {
@@ -33,7 +38,7 @@ export function SidebarComponent() {
       href: "#",
       component: "settings" as const,
       icon: (
-        <Settings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <CaseSensitive className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ];

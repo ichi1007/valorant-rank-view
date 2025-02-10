@@ -25,6 +25,12 @@ const localization = {
   formFieldLabel__confirmPassword: "パスワードの確認",
   formFieldLabel__signOutOfOtherSessions:
     "他のすべてのデバイスからサインアウトする",
+  formFieldLabel__username: "ユーザー名",
+  badge__primary: "プライマリー",
+  badge__unverified: "未検証",
+  formButtonPrimary__verify: "確認",
+  formFieldLabel__currentPassword: "現在のパスワード",
+  badge__thisDevice: "今のデバイス",
 
   waitlist: {
     start: {
@@ -45,23 +51,18 @@ const localization = {
   signIn: {
     start: {
       actionLink__join_waitlist: "参加する",
-      actionLink__use_email: "Use email",
-      actionLink__use_email_username: "Use email or username",
-      actionLink__use_passkey: "Use passkey instead",
-      actionLink__use_phone: "Use phone",
-      actionLink__use_username: "Use username",
-      actionText: "Don’t have an account?",
       actionText__join_waitlist: "ウェイティングリストに",
-      subtitle: "Welcome back! Please sign in to continue",
       subtitleCombined: undefined,
       title: "{{applicationName}} にログインする",
       titleCombined: "{{applicationName}} にログイン",
     },
+
     password: {
       actionLink: "別の方法を使う",
       subtitle: "アカウントのパスワードを入力してください。",
       title: "パスワードを入力してください",
     },
+
     emailLink: {
       title: "メールリンクでサインイン",
       subtitle: "続行するにはメールリンクを確認してください",
@@ -98,25 +99,25 @@ const localization = {
         subtitle: "このリンクは別のデバイスで開く必要があります",
       },
     },
+
     emailCode: {
       formTitle: "検証コード",
       resendButton: "コードが届きませんでしたか？ 再送する",
       subtitle: "",
       title: "メールボックスをチェックする",
     },
+
     unstable__errors: {
       form_param_nil: "このフィールドは必須であり、空にすることはできません。",
     },
+
     alternativeMethods: {
       actionLink: "助けを求める",
       actionText: "何もできることがありませんか？",
       blockButton__backupCode: "Use a backup code",
       blockButton__emailCode: "コードを受け取る {{identifier}}",
-      blockButton__emailLink: "Email link to {{identifier}}",
-      blockButton__passkey: "Sign in with your passkey",
+      blockButton__emailLink: "{{identifier}} にEメールリンクを送る",
       blockButton__password: "パスワードを入力してサインインする",
-      blockButton__phoneCode: "Send SMS code to {{identifier}}",
-      blockButton__totp: "Use your authenticator app",
       getHelp: {
         blockButton__emailSupport: "サポートを受ける",
         content:
@@ -127,11 +128,13 @@ const localization = {
         "問題に直面していますか？ 以下のいずれかの方法でログインできます。",
       title: "別のアカウントを使う",
     },
+
     forgotPasswordAlternativeMethods: {
       blockButton__resetPassword: "パスワードのリセット",
       label__alternativeMethods: "または、別の方法でサインインする",
       title: "パスワードをお忘れですか？",
     },
+
     forgotPassword: {
       formTitle: "パスワード再設定コード",
       resendButton: "コードが届きませんでしたか？ 再送する",
@@ -140,6 +143,7 @@ const localization = {
         "あなたのメールアドレスに送られたコードを入力してください。",
       title: "パスワードのリセット",
     },
+
     resetPassword: {
       formButtonPrimary: "パスワードのリセット",
       requiredMessage:
@@ -147,6 +151,127 @@ const localization = {
       successMessage:
         "パスワードは正常に変更されました。 ログインします、しばらくお待ちください。",
       title: "新しいパスワードを設定する",
+    },
+  },
+
+  userButton: {
+    action__addAccount: "アカウント追加",
+    action__manageAccount: "アカウント管理",
+    action__signOut: "サインアウト",
+    action__signOutAll: "すべてのアカウントからサインアウトする",
+  },
+
+  userProfile: {
+    formButtonPrimary__save: "保存",
+    formButtonReset: "キャンセル",
+    formButtonPrimary__add: "追加",
+    formButtonPrimary__remove: "削除",
+
+    navbar: {
+      account: "プロフィール",
+      description: "アカウント情報の管理",
+      security: "セキュリティ",
+      title: "アカウント",
+    },
+
+    start: {
+      headerTitle__account: "プロフィール詳細",
+      headerTitle__security: "セキュリティ",
+      profileSection: {
+        primaryButton: "プロフィール更新",
+        title: "プロフィール",
+      },
+
+      usernameSection: {
+        primaryButton__setUsername: "ユーザー名を設定する",
+        primaryButton__updateUsername: "ユーザー名の更新",
+        title: "ユーザー名",
+      },
+
+      emailAddressesSection: {
+        destructiveAction: "メール削除",
+        detailsAction__nonPrimary: "プライマリーに設定",
+        detailsAction__primary: "Complete verification",
+        detailsAction__unverified: "検証",
+        primaryButton: "メールアドレスの追加",
+        title: "メールアドレス",
+      },
+
+      passwordSection: {
+        primaryButton__setPassword: "パスワード設定",
+        primaryButton__updatePassword: "パスワードの更新",
+        title: "パスワード",
+      },
+
+      activeDevicesSection: {
+        destructiveAction: "デバイスからサインアウトする",
+        title: "使用中デバイス",
+      },
+
+      dangerSection: {
+        deleteAccountButton: "アカウント削除",
+        title: "アカウント削除",
+      },
+    },
+
+    profilePage: {
+      fileDropAreaHint: "推奨サイズ1:1、10MBまで。",
+      imageFormDestructiveActionSubtitle: "削除",
+      imageFormSubtitle: "アップロード",
+      imageFormTitle: "プロフィール画像",
+      readonly:
+        "あなたのプロフィール情報は、企業接続によって提供されたものであり、編集することはできません。",
+      successMessage: "プロフィールが更新されました。",
+      title: "プロフィール更新",
+    },
+
+    usernamePage: {
+      successMessage: "ユーザー名が更新されました。",
+      title__set: "ユーザー名を設定する",
+      title__update: "ユーザー名の更新",
+    },
+
+    emailAddressPage: {
+      formHint:
+        "アカウントに追加する前に、このメールアドレスを確認する必要があります。",
+      title: "メールアドレスの追加",
+      verifyTitle: "メールアドレスの確認",
+      emailCode: {
+        formHint: "認証コードが記載されたメールアドレスに送信されます。",
+        formSubtitle:
+          "{{identifier}} に送信された認証コードを入力してください。",
+        formTitle: "検証コード",
+        resendButton: "コードが届きませんでしたか？ 再送する",
+        successMessage:
+          "メールアドレス {{identifier}} がアカウントに追加されました。",
+      },
+
+      removeResource: {
+        messageLine1: "{{identifier}} はこのアカウントから削除されます。",
+        messageLine2: "このメールアドレスではサインインできなくなります。",
+        successMessage: "{{emailAddress}} がアカウントから削除されました。",
+        title: "メールアドレスの削除",
+      },
+    },
+
+    passwordPage: {
+      checkboxInfoText__signOutOfOtherSessions:
+        "古いパスワードを使用している可能性のある他のすべてのデバイスからサインアウトすることをお勧めします。",
+      readonly: "現在、パスワードの編集はできません。",
+      successMessage__set: "パスワードが設定されました。",
+      successMessage__signOutOfOtherSessions:
+        "他のすべてのデバイスはサインアウトされている。",
+      successMessage__update: "パスワードが更新されました。",
+      title__set: "パスワード設定",
+      title__update: "パスワードの更新",
+    },
+
+    deletePage: {
+      actionDescription: "下に「Delete account」と入力して続行します。",
+      confirm: "アカウント削除",
+      messageLine1: "本当にアカウントを削除しますか？",
+      messageLine2: "この行為は取り消すことができません。",
+      title: "アカウント削除",
     },
   },
 };
