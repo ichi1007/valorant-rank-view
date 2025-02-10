@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
     // プロフィールの保存/更新
     const result = await saveProfile({
-      id: data.id,
+      id: data.id, // ClerkのユーザーIDを使用
       clerk_name: data.clerk_name,
       game_name: data.game_name,
       game_id: data.game_id,

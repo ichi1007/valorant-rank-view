@@ -59,14 +59,8 @@ export const Dvalorant = () => {
     }, 3000);
   };
 
-  // UserIDをCookieから管理
-  const [userId] = useState<string>(() => {
-    const savedId = Cookies.get("user_id");
-    if (savedId) return savedId;
-    const newId = crypto.randomUUID();
-    Cookies.set("user_id", newId, { expires: 365 });
-    return newId;
-  });
+  // ClerkのユーザーIDを使用
+  const userId = user?.id;
 
   // Cookieからゲーム情報を復元
   useEffect(() => {
@@ -114,10 +108,9 @@ export const Dvalorant = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const savedId = Cookies.get("user_id");
-        if (!savedId) return;
+        if (!userId) return;
 
-        const response = await fetch(`/api/profile?userId=${savedId}`);
+        const response = await fetch(`/api/profile?userId=${userId}`);
         const data = await response.json();
 
         if (response.ok && data.profile) {
@@ -132,7 +125,7 @@ export const Dvalorant = () => {
     };
 
     fetchInitialData();
-  }, []); // 初回のみ実行
+  }, [userId]); // userIdを依存配列に追加
 
   // ランク情報の取得を別のuseEffectで管理
   useEffect(() => {
@@ -167,6 +160,8 @@ export const Dvalorant = () => {
   // 登録解除時の処理を修正
   const handleUnregister = async () => {
     try {
+      if (!userId) return;
+
       // プロフィールを初期化
       const response = await fetch("/api/profile", {
         method: "DELETE",
@@ -196,7 +191,7 @@ export const Dvalorant = () => {
 
   // ゲーム情報とAPIキーを同時に保存
   const saveGameInfo = async () => {
-    if (!gameName || !gameId) {
+    if (!gameName || !gameId || !userId) {
       showToast("ゲーム名とIDを入力してください", "error");
       return;
     }
@@ -208,7 +203,7 @@ export const Dvalorant = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: userId, // UUIDを使用
+          id: userId, // ClerkのユーザーIDを使用
           clerk_name: user?.username || "anonymous",
           game_name: gameName,
           game_id: gameId,
