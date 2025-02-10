@@ -9,59 +9,61 @@ import {
 
 export default function Header() {
   return (
-    <header className="sticky top-0 !bg-white z-50 w-full max-w-[1000px] flex justify-between items-center px-5 py-5 mx-auto">
-      <div className="flex items-end">
-        <h1>
-          <Link href="/" className="text-xl font-bold">
-            げーむらんく
-          </Link>
-        </h1>
-        <nav className="list-none pl-7 hidden sm:flex items-center">
-          <li className="px-3">
-            <Link
-              href="/docs"
-              className="text-gray-500 hover:text-black transition-all"
-            >
-              Docs
+    <header className="w-full fixed !bg-white !z-[99999]">
+      <div className="flex py-5 max-w-[1000px] mx-auto justify-between items-center">
+        <div className="flex items-end">
+          <h1>
+            <Link href="/" className="text-xl font-bold">
+              げーむらんく
             </Link>
-          </li>
-          <li className="px-3">
+          </h1>
+          <nav className="list-none pl-7 hidden sm:flex items-center">
+            <li className="px-3">
+              <Link
+                href="/docs"
+                className="text-gray-500 hover:text-black transition-all"
+              >
+                Docs
+              </Link>
+            </li>
+            <li className="px-3">
+              <Link
+                href="/blog"
+                className="text-gray-500 hover:text-black transition-all"
+              >
+                Blog
+              </Link>
+            </li>
+            <li className="px-3">
+              <Link
+                href="/sh"
+                className="text-gray-500 hover:text-black transition-all"
+              >
+                SiteHealth
+              </Link>
+            </li>
+          </nav>
+        </div>
+        <div>
+          <SignedOut>
+            <SignInButton />
             <Link
-              href="/blog"
-              className="text-gray-500 hover:text-black transition-all"
+              href="/waitlist"
+              className="ml-5 bg-gray-900 text-white px-5 py-[6px] rounded-md"
             >
-              Blog
+              Join Waitlist
             </Link>
-          </li>
-          <li className="px-3">
+          </SignedOut>
+          <SignedIn>
             <Link
-              href="/sh"
-              className="text-gray-500 hover:text-black transition-all"
+              href="/dashboard"
+              className="mr-5 bg-gray-900 text-white px-5 py-[6px] rounded-md"
             >
-              SiteHealth
+              ダッシュボード
             </Link>
-          </li>
-        </nav>
-      </div>
-      <div>
-        <SignedOut>
-          <SignInButton />
-          <Link
-            href="/waitlist"
-            className="ml-5 bg-gray-900 text-white px-2 py-[3px] rounded-md"
-          >
-            Join Waitlist
-          </Link>
-        </SignedOut>
-        <SignedIn>
-          <Link
-            href="/dashboard"
-            className="mr-5 bg-gray-900 text-white px-2 py-[3px] rounded-md"
-          >
-            ダッシュボード
-          </Link>
-          <SignOutButton />
-        </SignedIn>
+            <SignOutButton />
+          </SignedIn>
+        </div>
       </div>
     </header>
   );
