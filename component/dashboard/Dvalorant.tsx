@@ -273,11 +273,11 @@ export const Dvalorant = () => {
 
   return (
     <div className="w-full h-full">
-      <h1 className="text-2xl font-bold mb-6">ランク情報</h1>
+      <h1 className="text-2xl font-bold mb-6 dark:text-white">ランク情報</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 左側：フォーム */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
-          <h2 className="text-xl font-semibold mb-4">
+          <h2 className="text-xl font-semibold mb-4 dark:text-white">
             {isRegistered ? "プレイヤー情報編集" : "プレイヤー検索"}
           </h2>
 
@@ -285,7 +285,7 @@ export const Dvalorant = () => {
             <div>
               <label
                 htmlFor="apiKey"
-                className="block mb-2 text-sm font-medium"
+                className="block mb-2 text-sm font-medium dark:text-white"
               >
                 HenrikDev API Key
                 <Link
@@ -303,7 +303,7 @@ export const Dvalorant = () => {
                   id="apiKey"
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  className="flex-1 p-2 border rounded-md dark:border-neutral-700 dark:bg-neutral-800"
+                  className="flex-1 p-2 border rounded-md dark:border-neutral-700 dark:bg-white"
                   required
                 />
                 <button
@@ -318,7 +318,7 @@ export const Dvalorant = () => {
             <div>
               <label
                 htmlFor="gameName"
-                className="block mb-2 text-sm font-medium"
+                className="block mb-2 text-sm font-medium dark:text-white"
               >
                 ゲーム名
               </label>
@@ -327,14 +327,14 @@ export const Dvalorant = () => {
                 id="gameName"
                 value={gameName}
                 onChange={(e) => setGameName(e.target.value)}
-                className="w-full p-2 border rounded-md dark:border-neutral-700 dark:bg-neutral-800"
+                className="w-full p-2 border rounded-md dark:border-neutral-700 dark:bg-white"
                 required
               />
             </div>
             <div>
               <label
                 htmlFor="gameId"
-                className="block mb-2 text-sm font-medium"
+                className="block mb-2 text-sm font-medium dark:text-white"
               >
                 ゲームID
               </label>
@@ -343,7 +343,7 @@ export const Dvalorant = () => {
                 id="gameId"
                 value={gameId}
                 onChange={(e) => setGameId(e.target.value)}
-                className="w-full p-2 border rounded-md dark:border-neutral-700 dark:bg-neutral-800"
+                className="w-full p-2 border rounded-md dark:border-neutral-700 dark:bg-white"
                 required
               />
             </div>
@@ -370,7 +370,9 @@ export const Dvalorant = () => {
         {/* 右側：プレビュー */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">プレビュー</h2>
+            <h2 className="text-xl font-semibold dark:text-white">
+              プレビュー
+            </h2>
             <button
               onClick={handleRefresh}
               disabled={loading}
@@ -398,23 +400,25 @@ export const Dvalorant = () => {
                   className="w-16 h-16"
                 />
                 <div>
-                  <p className="text-xl font-semibold">
+                  <p className="text-xl font-semibold dark:text-white">
                     {rankData.data.currenttierpatched}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-white">
                     ELO: {rankData.data.elo}
                   </p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 bg-gray-100 dark:bg-neutral-800 rounded">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-white">
                     ランク進捗
                   </p>
-                  <p className="text-lg">{rankData.data.ranking_in_tier}/100</p>
+                  <p className="text-lg dark:text-white">
+                    {rankData.data.ranking_in_tier}/100
+                  </p>
                 </div>
                 <div className="p-3 bg-gray-100 dark:bg-neutral-800 rounded">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-white">
                     最後の変動
                   </p>
                   <p
@@ -429,7 +433,7 @@ export const Dvalorant = () => {
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-white">
                 最終更新: {new Date().toLocaleString()}
               </p>
             </div>
