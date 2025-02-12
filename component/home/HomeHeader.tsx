@@ -9,7 +9,7 @@ import {
 
 export default function Header() {
   return (
-    <header className="w-full fixed !bg-white !z-[99999]">
+    <header className="w-full fixed !bg-white !z-[99999] px-2">
       <div className="flex py-5 max-w-[1000px] mx-auto justify-between items-center">
         <div className="flex items-end">
           <h1>
