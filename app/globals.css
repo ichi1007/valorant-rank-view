@@ -4,11 +4,11 @@
 
 @font-face {
   font-family: 'LINESeedJP';
-  src: url('../font/LINESeedJP_A_OTF_Bd.otf') format('opentype'); /* OTFフォーマットを指定 */
+  src: url('../font/LINESeedJP_A_OTF_Rg.otf') format('opentype');
 }
 
 body {
-  font-family: 'LINESeedJP', sans-serif; /* フォントを適用 */
+  font-family: 'LINESeedJP', sans-serif;
 }
 
 html {
