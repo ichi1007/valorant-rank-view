@@ -305,7 +305,7 @@ export default function RootLayout({
           </script>
 
           {/* Apple */}
-          <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+          <link rel="apple-touch-icon" href="./favicon.ico" />
           <meta name="apple-mobile-web-app-title" content="げーむらんく" />
         </head>
         <body>
