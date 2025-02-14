@@ -1,21 +1,15 @@
-import type { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getProfile } from "@/lib/dynamo";
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
+interface Params {
+  id: string;
+}
 
-export async function GET(
-  _request: NextRequest,
-  context: Context
-): Promise<NextResponse> {
-  const id = context.params.id;
-
+// App RouterのAPIハンドラー型に合わせて修正
+export async function GET(req: NextRequest, { params }: { params: Params }) {
   try {
-    const profile = await getProfile(id);
+    const profile = await getProfile(params.id);
 
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
