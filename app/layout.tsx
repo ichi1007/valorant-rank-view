@@ -9,7 +9,10 @@ export const metadata: Metadata = {
   openGraph: {
     images: [{
       url: "https://game-rank.ichi10.com/site-thumbnail.png",
-    }],
+    }]
+  },
+  twitter: {
+    card: 'summary_large_image'
   },
 };
 
