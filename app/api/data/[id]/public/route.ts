@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProfile } from "@/lib/dynamo";
 
-// 正しい型定義
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
-export async function GET(request: NextRequest, context: RouteContext) {
-  const id = context.params.id;
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id;
 
   try {
     const profile = await getProfile(id);
@@ -18,7 +14,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // 機密情報を除外した公開データのみを返す
     const publicData = {
       clerk_name: profile.clerk_name,
       game_name: profile.game_name,
