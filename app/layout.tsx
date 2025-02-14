@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Footer from "@/component/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
@@ -7,12 +6,14 @@ export const metadata: Metadata = {
   title: "げーむらんく | あなたの配信画面をちょびっとだけ豪華に？",
   description: "Develop by ichi",
   openGraph: {
-    images: [{
-      url: "https://game-rank.ichi10.com/site-thumbnail.png",
-    }]
+    images: [
+      {
+        url: "https://game-rank.ichi10.com/site-thumbnail.png",
+      },
+    ],
   },
   twitter: {
-    card: 'summary_large_image'
+    card: "summary_large_image",
   },
 };
 
@@ -301,7 +302,7 @@ export default function RootLayout({
           <script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-9LP2P81ZBK"
-          ></script>
+          />
           <script>
             {`
               window.dataLayer = window.dataLayer || [];
@@ -318,7 +319,6 @@ export default function RootLayout({
         </head>
         <body>
           {children}
-          <Footer />
         </body>
       </ClerkProvider>
     </html>

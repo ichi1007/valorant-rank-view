@@ -4,11 +4,12 @@
 
 @font-face {
   font-family: 'LINESeedJP';
-  src: url('../font/LINESeedJP_A_OTF_Rg.otf') format('opentype');
+  src: url('../font/MochiyPopOne-OTF-ExtraBold.otf') format('opentype');
 }
 
 body {
   font-family: 'LINESeedJP', sans-serif;
+  font-weight: 300;
 }
 
 html {

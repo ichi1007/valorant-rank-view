@@ -28,7 +28,7 @@ interface RankData {
 const SkeletonLoading = () => (
   <div className="animate-pulse">
     {/* シンプルな大きな四角形 */}
-    <div className="w-full h-48 bg-gray-200 dark:bg-neutral-700 rounded-lg" />
+    <div className="w-full h-32 bg-gray-200 dark:bg-neutral-700 rounded-lg" />
   </div>
 );
 
@@ -266,6 +266,17 @@ export const Dvalorant = () => {
     }
   }, [isRegistered, gameName, gameId, apiKey, rankData, handleSearch]);
 
+  const handleCopyUrl = () => {
+    navigator.clipboard
+      .writeText(`https://game-rank.ichi10.com/view/${userId || ''}`)
+      .then(() => {
+        showToast("URLをコピーしました", "success");
+      })
+      .catch(() => {
+        showToast("コピーに失敗しました", "error");
+      });
+  };
+
   return (
     <div className="w-full h-full">
       <h1 className="text-2xl font-bold mb-6 dark:text-white">ランク情報</h1>
@@ -386,57 +397,77 @@ export const Dvalorant = () => {
           {loading && <SkeletonLoading />}
           {error && <div className="text-red-500">{error}</div>}
           {rankData && rankData.data && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Image
-                  src={rankData.data.images.large}
-                  alt="ランクアイコン"
-                  width={64}
-                  height={64}
-                  className="w-16 h-16"
-                />
+            <div className="space-y-4 p-4 bg-gray-100 bg-opacity-75 rounded-lg shadow-lg">
+              <div className="bg-gray-400 px-3 py-3 rounded-xl flex">
                 <div>
-                  <p className="text-xl font-semibold dark:text-white">
-                    {rankData.data.currenttierpatched}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-white">
-                    ELO: {rankData.data.elo}
-                  </p>
+                  <Image
+                    src={rankData.data.images.large}
+                    alt=""
+                    width={64}
+                    height={64}
+                  />
+                </div>
+                <div className="w-full">
+                  <div className="flex items-end text-white mb-1">
+                    <p className="text-xl mr-5">
+                      {rankData.data.currenttierpatched}
+                    </p>
+                    <p className="text-sm">
+                      {rankData.data.ranking_in_tier}/100
+                    </p>
+                  </div>
+                  <div className="relative w-full h-6 rounded-full overflow-hidden bg-gray-200 flex items-center px-3">
+                    <div className="absolute inset-0 flex">
+                      <div
+                        className="bg-purple-500 h-full"
+                        style={{ width: `${rankData.data.ranking_in_tier}%` }}
+                      />
+                      <div
+                        className={`h-full flex items-center justify-center ${
+                          rankData.data.mmr_change_to_last_game >= 0
+                            ? "bg-[#7EFF73]"
+                            : "bg-red-500"
+                        }`}
+                        style={{
+                          width: `${Math.abs(
+                            rankData.data.mmr_change_to_last_game
+                          )}%`,
+                        }}
+                      >
+                        <span className="text-xs text-black font-bold z-10">
+                          {rankData.data.mmr_change_to_last_game >= 0
+                            ? "+"
+                            : ""}
+                          {rankData.data.mmr_change_to_last_game}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 bg-gray-100 dark:bg-neutral-800 rounded">
-                  <p className="text-sm text-gray-600 dark:text-white">
-                    ランク進捗
-                  </p>
-                  <p className="text-lg dark:text-white">
-                    {rankData.data.ranking_in_tier}/100
-                  </p>
-                </div>
-                <div className="p-3 bg-gray-100 dark:bg-neutral-800 rounded">
-                  <p className="text-sm text-gray-600 dark:text-white">
-                    最後の変動
-                  </p>
-                  <p
-                    className={`text-lg ${
-                      rankData.data.mmr_change_to_last_game >= 0
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {rankData.data.mmr_change_to_last_game >= 0 ? "+" : ""}
-                    {rankData.data.mmr_change_to_last_game}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-white">
-                最終更新: {new Date().toLocaleString()}
-              </p>
             </div>
           )}
           {!loading && (!rankData || !rankData.data) && !error && (
             <SkeletonLoading />
           )}
+
+          <div className="w-full mt-10">
+            <h3 className="text-lg">ソースURl</h3>
+            <div className="flex">
+              <input
+                type="url"
+                value={`https://game-rank.ichi10.com/view/${userId || ''}`}
+                className="w-[70%] border rounded-md p-2 dark:bg-neutral-700"
+                readOnly
+              />
+              <button
+                className="px-2 border rounded-xl ml-2"
+                onClick={handleCopyUrl}
+              >
+                コピー
+              </button>
+            </div>
+          </div>
         </div>
       </div>
       <Toast
