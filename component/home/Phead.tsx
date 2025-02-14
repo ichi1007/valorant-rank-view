@@ -46,7 +46,7 @@ export default function Phead() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: "easeOut", delay: 1 }}
           >
-            配信画面にランクを表示して画面を華やかに！
+            あなたの配信画面をちょびっとだけ豪華に？
           </motion.p>
           <motion.div
             className="flex flex-wrap justify-center"

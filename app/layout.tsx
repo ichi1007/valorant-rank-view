@@ -4,8 +4,13 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "げーむらんく | あなたの配信画面を華やかにします！",
+  title: "げーむらんく | あなたの配信画面をちょびっとだけ豪華に？",
   description: "Develop by ichi",
+  openGraph: {
+    images: [{
+      url: "https://game-rank.ichi10.com/site-thumbnail.png",
+    }],
+  },
 };
 
 const localization = {
