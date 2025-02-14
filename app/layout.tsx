@@ -7,12 +7,14 @@ export const metadata: Metadata = {
   title: "げーむらんく | あなたの配信画面をちょびっとだけ豪華に？",
   description: "Develop by ichi",
   openGraph: {
-    images: [{
-      url: "https://game-rank.ichi10.com/site-thumbnail.png",
-    }]
+    images: [
+      {
+        url: "https://game-rank.ichi10.com/site-thumbnail.png",
+      },
+    ],
   },
   twitter: {
-    card: 'summary_large_image'
+    card: "summary_large_image",
   },
 };
 
@@ -313,7 +315,16 @@ export default function RootLayout({
           </script>
 
           {/* Apple */}
-          <link rel="apple-touch-icon" href="./favicon.ico" />
+          <link
+            rel="apple-touch-icon"
+            media="(prefers-color-scheme: dark)"
+            href="./apple-touch-dark.ico"
+          />
+          <link
+            rel="apple-touch-icon"
+            media="(prefers-color-scheme: light)"
+            href="./apple-touch-light.ico"
+          />
           <meta name="apple-mobile-web-app-title" content="げーむらんく" />
         </head>
         <body>
