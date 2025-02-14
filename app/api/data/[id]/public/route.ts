@@ -1,11 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
 import { getProfile } from "@/lib/dynamo";
 
+type Context = {
+  params: {
+    id: string;
+  };
+};
+
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
+  _request: NextRequest,
+  context: Context
+): Promise<NextResponse> {
+  const id = context.params.id;
 
   try {
     const profile = await getProfile(id);
