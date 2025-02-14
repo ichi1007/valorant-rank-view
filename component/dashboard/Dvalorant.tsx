@@ -397,7 +397,7 @@ export const Dvalorant = () => {
           {loading && <SkeletonLoading />}
           {error && <div className="text-red-500">{error}</div>}
           {rankData && rankData.data && (
-            <div className="space-y-4 p-4 bg-gray-100 bg-opacity-75 rounded-lg shadow-lg">
+            <div className="space-y-4 px-4 py-5 bg-gray-100 bg-opacity-75 rounded-lg shadow-lg">
               <div className="bg-gray-400 px-3 py-3 rounded-xl flex">
                 <div>
                   <Image
