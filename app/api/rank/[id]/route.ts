@@ -3,25 +3,29 @@ import { getProfile } from "@/lib/dynamo";
 
 const API_BASE_URL = "https://api.henrikdev.xyz/valorant/v1/mmr";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const id = params.id;
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const segments = url.pathname.split("/");
+  const idIndex = segments.indexOf("rank") + 1;
+  const id = segments[idIndex];
+
+  if (!id) {
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+  }
 
   try {
-    // DynamoDBからプロフィール情報を取得
     const profile = await getProfile(id);
     if (!profile) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // api_keyが存在しない場合はエラーを返す
     if (!profile.api_key) {
-      return NextResponse.json({ error: "API key is not set" }, { status: 400 });
+      return NextResponse.json(
+        { error: "API key is not set" },
+        { status: 400 }
+      );
     }
 
-    // HenrikDev APIを呼び出し
     const response = await fetch(
       `${API_BASE_URL}/ap/${profile.game_name}/${profile.game_id}`,
       {
@@ -39,7 +43,6 @@ export async function GET(
       });
     }
 
-    // 必要なデータのみを返す
     return NextResponse.json({
       status: 200,
       data: {
