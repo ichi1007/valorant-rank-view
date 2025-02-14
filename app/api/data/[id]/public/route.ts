@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { getProfile } from "@/lib/dynamo";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+interface RouteParams {
+  params: {
+    id: string;
+  };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export async function GET(request: Request, { params }: RouteParams) {
   const id = params.id;
 
   try {
