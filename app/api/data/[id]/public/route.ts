@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getProfile } from "@/lib/dynamo";
 
-interface RouteParams {
+// 正しい型定義
+type RouteContext = {
   params: {
     id: string;
   };
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+};
 
-export async function GET(request: Request, { params }: RouteParams) {
-  const id = params.id;
+export async function GET(request: NextRequest, context: RouteContext) {
+  const id = context.params.id;
 
   try {
     const profile = await getProfile(id);
