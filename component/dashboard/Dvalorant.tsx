@@ -295,7 +295,7 @@ export const Dvalorant = () => {
               >
                 HenrikDev API Key
                 <Link
-                  href="/docs/api/valorant"
+                  href="/docs/?sec=api-valorant"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-2 text-blue-500 hover:text-blue-600 text-xs"
@@ -452,7 +452,7 @@ export const Dvalorant = () => {
           )}
 
           <div className="w-full mt-10">
-            <h3 className="text-lg">ソースURl</h3>
+            <h3 className="text-lg">ソースURL</h3>
             <div className="flex">
               <input
                 type="url"
