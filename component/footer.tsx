@@ -38,21 +38,6 @@ export default function Footer() {
             </Link>
             , Inc. が公式に提供しているものを使用しております。
           </li>
-          <li>
-            本サイトでは、&copy;{" "}
-            <Link href="https://line.me" className="underline" target="_blank">
-              LY Corporation
-            </Link>
-            , が提供する{" "}
-            <Link
-              href="https://seed.line.me/"
-              className="underline"
-              target="_blank"
-            >
-              Line Seed Font
-            </Link>{" "}
-            を使用しています。
-          </li>
         </ul>
       </div>
       <footer className="w-full bg-white border-t text-black text-center py-5 text-sm">
