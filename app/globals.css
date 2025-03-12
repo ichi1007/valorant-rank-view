@@ -1,17 +1,303 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'LINESeedJP';
-  src: url('../font/MochiyPopOne-OTF-ExtraBold.otf') format('opentype');
-}
-
 body {
-  font-family: 'LINESeedJP', sans-serif;
-  font-weight: 300;
+  font-family: "Noto Sans JP", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  overflow-x: hidden;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* ドキュメントページの高さ調整 */
+html,
+body {
+  height: 100%;
+}
+
+/* ドキュメントページのスクロール制御 */
+.docs-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.docs-content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.docs-sidebar {
+  position: sticky;
+  top: 4rem;
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+.docs-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Markdownスタイルの強化 */
+.markdown-body {
+  @apply text-gray-800 leading-normal break-words;
+}
+
+.markdown-body h1 {
+  @apply text-3xl font-bold mb-4 mt-6;
+}
+
+.markdown-body h2 {
+  @apply text-2xl font-bold mb-3 mt-5;
+}
+
+.markdown-body h3 {
+  @apply text-xl font-bold mb-2 mt-4;
+}
+
+.markdown-body p {
+  @apply mb-4;
+}
+
+.markdown-body ul {
+  @apply list-disc ml-6 mb-4;
+}
+
+.markdown-body ol {
+  @apply list-decimal ml-6 mb-4;
+}
+
+.markdown-body li {
+  @apply mb-1;
+}
+
+.markdown-body code {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+.markdown-body pre {
+  @apply bg-gray-100 p-4 rounded mb-4 overflow-auto;
+}
+
+.markdown-body pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown-body blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-4;
+}
+
+/* 表のスタイルを修正 */
+.markdown-body table {
+  @apply w-full border-collapse mb-6 bg-white;
+  display: table;
+  overflow-x: auto;
+}
+
+.markdown-body table thead {
+  @apply bg-gray-50;
+}
+
+.markdown-body table thead tr {
+  @apply border-b border-gray-300;
+}
+
+.markdown-body table th {
+  @apply border border-gray-300 px-4 py-2 text-left font-semibold;
+}
+
+.markdown-body table td {
+  @apply border border-gray-300 px-4 py-2;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  @apply bg-gray-50;
+}
+
+/* レスポンシブ表対応 */
+@media (max-width: 640px) {
+  .markdown-body table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+.markdown-body a {
+  @apply text-blue-600 hover:underline;
+}
+
+/* 目次スタイル */
+.toc-container {
+  @apply bg-gray-50 p-4 rounded;
+  position: sticky;
+  top: 6rem;
+  max-height: calc(100vh - 8rem);
+  overflow-y: auto;
+}
+
+/* 目次スタイル - Next.js ドキュメント風 改良版 */
+.toc-container {
+  position: relative;
+  width: 100%;
+  font-size: 14px;
+  padding-left: 0.5rem;
+  background-color: transparent;
+  /* 背景を透明に */
+}
+
+.toc-header {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.toc-nav {
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+}
+
+.toc-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-item {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.toc-item.level-1 {
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.toc-item.level-2 {
+  padding-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.toc-item.level-3 {
+  padding-left: 2rem;
+  font-size: 13px;
+}
+
+.toc-link {
+  color: #666;
+  text-decoration: none;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.toc-link:hover {
+  color: #000;
+}
+
+.toc-link-main {
+  font-weight: 500;
+}
+
+.main-dot {
+  color: #0070f3;
+  font-size: 0.5rem;
+}
+
+.sub-dot {
+  color: #666;
+  font-size: 0.5rem;
+}
+
+.sub-sub-dot {
+  color: #999;
+  font-size: 0.5rem;
+}
+
+.toc-text {
+  flex: 1;
+}
+
+.toc-item.active>.toc-link {
+  color: #0070f3;
+  font-weight: 500;
+}
+
+.toc-item.active>.toc-link .main-dot,
+.toc-item.active>.toc-link .sub-dot,
+.toc-item.active>.toc-link .sub-sub-dot {
+  color: #0070f3;
+}
+
+/* スクロールバーのスタイリング */
+.toc-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toc-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-container::-webkit-scrollbar-thumb {
+  background: #eaeaea;
+  border-radius: 2px;
+}
+
+.toc-container::-webkit-scrollbar-thumb:hover {
+  background: #d4d4d4;
+}
+
+/* スクロールバーのスタイリング */
+.toc-container::-webkit-scrollbar {
+  @apply w-1;
+}
+
+.toc-container::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded;
+}
+
+.toc-container::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded hover:bg-gray-400;
+}
+
+/* アクティブな目次項目 */
+.toc-container .active {
+  @apply text-blue-600 font-medium border-l-2 border-blue-500;
+}
+
+/* アンカーリンク */
+.markdown-body h1 .anchor-link,
+.markdown-body h2 .anchor-link,
+.markdown-body h3 .anchor-link {
+  @apply ml-2 opacity-0 text-gray-400 no-underline;
+}
+
+.markdown-body h1:hover .anchor-link,
+.markdown-body h2:hover .anchor-link,
+.markdown-body h3:hover .anchor-link {
+  @apply opacity-100;
+}
+
+/* 目次表示の最適化 */
+@media (min-width: 1280px) {
+  .toc-container {
+    display: block !important;
+    opacity: 1 !important;
+  }
 }

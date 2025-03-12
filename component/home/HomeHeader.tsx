@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <header className="w-full fixed !bg-white !z-[99999] px-2">
       <div className="flex py-5 max-w-[1000px] mx-auto justify-between items-center">
-        <div className="flex items-end">
+        <div className="flex flex-wrap items-end">
           <h1>
             <Link href="/" className="text-xl font-bold">
               げーむらんく
@@ -42,9 +42,17 @@ export default function Header() {
                 SiteHealth
               </Link>
             </li>
+            <li className="px-3">
+              <Link
+                href="/contact"
+                className="text-gray-500 hover:text-black transition-all"
+              >
+                Contact
+              </Link>
+            </li>
           </nav>
         </div>
-        <div>
+        <div className="flex flex-wrap items-center">
           <SignedOut>
             <SignInButton />
             <Link

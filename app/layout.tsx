@@ -44,7 +44,7 @@ const localization = {
       actionText: "既にアカウントをお持ちですか？",
       formButton: "使用権をリクエスト",
       subtitle: "メールアドレスを入力してください。",
-      title: "ウェイトリストに参加する",
+      title: "Join Join Waitlist",
       emailAddress: "メールアドレス",
     },
     success: {
