@@ -158,8 +158,8 @@ export default function MobileMenuWrapper({
 
           {/* メニュー内容 - メニューを閉じる関数を渡す */}
           <div className="p-4 max-w-md mx-auto">
-            <ClientSidebar 
-              currentSection={section} 
+            <ClientSidebar
+              currentSection={section}
               sectionList={sectionList}
               onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
             />
@@ -170,9 +170,9 @@ export default function MobileMenuWrapper({
       {/* 左サイドバー - タブレット・デスクトップ (通常表示) */}
       <div className="hidden sm:block w-64 flex-shrink-0">
         <div className="fixed h-screen pt-20 pr-4 overflow-y-auto">
-          <ClientSidebar 
-            currentSection={section} 
-            sectionList={sectionList} 
+          <ClientSidebar
+            currentSection={section}
+            sectionList={sectionList}
             // デスクトップでは不要だがonCloseMobileMenuを渡す
           />
         </div>
