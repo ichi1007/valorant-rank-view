@@ -1,6 +1,5 @@
+// クライアントコンポーネントの指定を削除（デフォルトでサーバーコンポーネント）
 import Link from "next/link";
-import { promises as fs } from "fs";
-import path from "path";
 
 interface DocsSidebarProps {
   currentSection?: string;
@@ -12,6 +11,38 @@ interface SectionInfo {
   order: number;
   displayName: string;
 }
+
+// サーバーコンポーネントとして定義
+export default async function DocsSidebar({
+  currentSection = "startguide",
+}: DocsSidebarProps) {
+  // サーバーサイドでの処理（Next.jsのビルド時または要求時に実行される）
+  const sections = await getAvailableSections();
+
+  return (
+    <ul className="w-full">
+      {sections.map((section) => (
+        <li key={section.id} className="mb-3">
+          <Link
+            className={`${
+              currentSection === section.id
+                ? "text-blue-600 font-medium"
+                : "text-black"
+            } hover:underline block py-1`}
+            href={`/docs?sec=${section.id}`}
+          >
+            {section.displayName}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// 以下のインポートはサーバーサイドのみで実行される
+// クライアントバンドルに含まれない
+import { promises as fs } from "fs";
+import path from "path";
 
 // 利用可能なセクション一覧を動的に取得
 async function getAvailableSections(): Promise<SectionInfo[]> {
@@ -73,29 +104,4 @@ function getSectionDisplayName(section: string): string {
   };
 
   return displayNames[section] || section;
-}
-
-export default async function DocsSidebar({
-  currentSection = "startguide",
-}: DocsSidebarProps) {
-  const sections = await getAvailableSections();
-
-  return (
-    <ul className="w-full">
-      {sections.map((section) => (
-        <li key={section.id} className="mb-3">
-          <Link
-            className={`${
-              currentSection === section.id
-                ? "text-blue-600 font-medium"
-                : "text-black"
-            } hover:underline block py-1`}
-            href={`/docs?sec=${section.id}`}
-          >
-            {section.displayName}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
 }

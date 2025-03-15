@@ -1,10 +1,14 @@
 import { promises as fs } from "fs";
 import path from "path";
 import Header from "@/component/docs/DocsHeader";
-import DocsSidebar from "@/component/docs/sidebar";
-import ClientMarkdown from "@/component/docs/ClientMarkdown";
-import TableOfContents from "@/component/docs/TableOfContents";
-import { Suspense } from "react";
+import DocsLayout from "@/component/docs/DocsLayout";
+
+// マークダウンファイル情報の型定義
+export interface SectionInfo {
+  id: string;
+  order: number;
+  displayName: string;
+}
 
 // 利用可能なセクション一覧を取得（静的生成用）
 export async function generateStaticParams() {
@@ -86,13 +90,51 @@ async function getMarkdownContent(section: string = "startguide") {
   }
 }
 
-// Markdownコンテンツを表示するコンポーネント
-function MarkdownContent({ content }: { content: string }) {
-  return (
-    <Suspense fallback={<div>読み込み中...</div>}>
-      <ClientMarkdown content={content} />
-    </Suspense>
-  );
+// マークダウンファイル一覧を取得する関数
+async function getSectionList(): Promise<SectionInfo[]> {
+  const docsDir = path.join(process.cwd(), "public/docs");
+
+  try {
+    const files = await fs.readdir(docsDir);
+    const mdFiles = files.filter((file) => file.endsWith(".md"));
+
+    // 各ファイルの情報を取得
+    const sections = await Promise.all(
+      mdFiles.map(async (file) => {
+        const id = file.replace(/\.md$/, "");
+        const filePath = path.join(docsDir, file);
+        const content = await fs.readFile(filePath, "utf8");
+        const lines = content.split("\n");
+
+        // 順序を取得
+        const firstLine = lines[0].trim();
+        const orderMatch = firstLine.match(/^\/(\d+)$/);
+        const order = orderMatch ? parseInt(orderMatch[1]) : 999;
+
+        // 最初の見出しを取得
+        let displayName = id; // デフォルト値はファイル名
+        for (const line of lines) {
+          const headingMatch = line.trim().match(/^#\s+(.+)$/);
+          if (headingMatch) {
+            displayName = headingMatch[1].trim();
+            break;
+          }
+        }
+
+        return { id, order, displayName };
+      })
+    );
+
+    // 順序でソート
+    return sections.sort((a, b) => a.order - b.order);
+  } catch (error) {
+    console.error("マークダウンファイル一覧の取得に失敗しました:", error);
+    return [
+      { id: "startguide", order: 1, displayName: "スタートガイド" },
+      { id: "features", order: 2, displayName: "機能紹介" },
+      { id: "faq", order: 3, displayName: "よくある質問" },
+    ];
+  }
 }
 
 // メインページコンポーネント
@@ -109,40 +151,20 @@ export default async function Page({
   // 現在のセクションのコンテンツを取得
   const { content, error } = await getMarkdownContent(section);
 
+  // 利用可能なセクション一覧を取得
+  const sectionList = await getSectionList();
+  console.log("利用可能なセクション:", sectionList);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex flex-1 w-full max-w-7xl mx-auto pt-16">
-        {/* 左サイドバー - ドキュメント一覧 */}
-        <div className="w-64 flex-shrink-0">
-          <div className="fixed h-screen pt-20 pr-4 overflow-y-auto">
-            <DocsSidebar currentSection={section} />
-          </div>
-        </div>
-
-        {/* メインコンテンツエリア */}
-        <div className="flex flex-1">
-          {/* メインコンテンツ - スクロール可能 */}
-          <div className="flex-1 px-6 py-8 docs-main-content">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-800 p-4 mb-4 rounded">
-                {error}
-              </div>
-            )}
-            <MarkdownContent content={content} />
-            <div className="text-xs text-gray-400 mt-8">
-              現在のセクション: {section}
-            </div>
-          </div>
-
-          {/* 右サイドバー - 目次 */}
-          <div className="hidden xl:block w-64 flex-shrink-0">
-            <div className="sticky top-24 pl-4 border-l border-gray-100">
-              <TableOfContents content={content} />
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* クライアントコンポーネントを使用 */}
+      <DocsLayout
+        section={section}
+        content={content}
+        error={error}
+        sectionList={sectionList}
+      />
     </div>
   );
 }

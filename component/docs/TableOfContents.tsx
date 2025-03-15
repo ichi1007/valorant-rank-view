@@ -11,6 +11,7 @@ interface TableItem {
 
 interface TableOfContentsProps {
   content: string;
+  isMobile?: boolean; // モバイル表示用のフラグを追加
 }
 
 // 改行コードを正規化する関数
@@ -34,7 +35,10 @@ function generateStableId(text: string, level: number): string {
   return "heading-unknown";
 }
 
-export default function TableOfContents({ content }: TableOfContentsProps) {
+export default function TableOfContents({
+  content,
+  isMobile = false,
+}: TableOfContentsProps) {
   const [tableItems, setTableItems] = useState<TableItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const [debugInfo, setDebugInfo] = useState<string>("No content loaded");
@@ -168,16 +172,24 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
 
   if (tableItems.length === 0) {
     return (
-      <div className="toc-container border border-gray-200 p-4 rounded">
-        <div className="toc-header">目次</div>
+      <div
+        className={`toc-container ${
+          isMobile ? "toc-mobile" : "border border-gray-200 p-4 rounded"
+        }`}
+      >
+        <div className={`toc-header ${isMobile ? "hidden" : ""}`}>目次</div>
         <div className="text-sm text-gray-500">{debugInfo}</div>
       </div>
     );
   }
 
   return (
-    <div className="toc-container border border-gray-200 p-4 rounded">
-      <div className="toc-header">目次</div>
+    <div
+      className={`toc-container ${
+        isMobile ? "toc-mobile" : "border border-gray-200 p-4 rounded"
+      }`}
+    >
+      <div className={`toc-header ${isMobile ? "hidden" : ""}`}>目次</div>
       <nav className="toc-nav">
         <ul>
           {tableItems.map((item, index) => (
