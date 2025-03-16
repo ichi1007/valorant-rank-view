@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import React from "react";
 
 // 表示用のデータ型（機密情報を含まない）
 interface PublicViewData {
@@ -29,7 +30,15 @@ export default function ViewComponent() {
     if (id) {
       // 1回目のフェッチ: 公開データの取得
       fetch(`/api/data/${id}/public`)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(`サーバーエラー: ${response.status}`);
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("JSONではないレスポンスを受信しました");
+          }
+          return response.json();
+        })
         .then((data) => {
           setPublicData(data);
         })
@@ -39,7 +48,15 @@ export default function ViewComponent() {
 
       // 2回目のフェッチ: バックエンドでAPIキーを使用してランク情報を取得
       fetch(`/api/rank/${id}`)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(`サーバーエラー: ${response.status}`);
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("JSONではないレスポンスを受信しました");
+          }
+          return response.json();
+        })
         .then((data) => {
           setRankData(data);
         })
@@ -70,28 +87,29 @@ export default function ViewComponent() {
                 <p className="text-sm">{rankData.data.ranking_in_tier}/100</p>
               </div>
               <div className="relative w-full h-5 rounded-full overflow-hidden bg-gray-200 flex items-center px-3">
-                <div className="absolute inset-0 flex">
-                  <div
-                    className="bg-purple-500 h-full"
-                    style={{ width: `${rankData.data.ranking_in_tier}%` }}
-                  />
-                  <div
-                    className={`h-full flex items-center justify-center ${
+                {/* 増減値をプログレスバーのすぐ上中央に表示 - 微調整 */}
+                <div className="absolute !-top-[0.7] left-1/2 transform -translate-x-1/2 z-20">
+                  <span
+                    className={`font-bold text-xs px-1.5 py-0.5 rounded shadow-sm ${
                       rankData.data.mmr_change_to_last_game >= 0
-                        ? "bg-[#7EFF73]"
+                        ? "text-green-600 bg-white/90"
+                        : "text-red-600 bg-white/90"
+                    }`}
+                  >
+                    {rankData.data.mmr_change_to_last_game >= 0 ? "+" : ""}
+                    {rankData.data.mmr_change_to_last_game}
+                  </span>
+                </div>
+                {/* プログレスバー */}
+                <div className="absolute inset-0 z-10">
+                  <div
+                    className={`h-full ${
+                      rankData.data.mmr_change_to_last_game >= 0
+                        ? "bg-green-500"
                         : "bg-red-500"
                     }`}
-                    style={{
-                      width: `${Math.abs(
-                        rankData.data.mmr_change_to_last_game
-                      )}%`,
-                    }}
-                  >
-                    <span className="text-xs text-black font-bold z-10">
-                      {rankData.data.mmr_change_to_last_game >= 0 ? "+" : ""}
-                      {rankData.data.mmr_change_to_last_game}
-                    </span>
-                  </div>
+                    style={{ width: `${rankData.data.ranking_in_tier}%` }}
+                  />
                 </div>
               </div>
             </div>

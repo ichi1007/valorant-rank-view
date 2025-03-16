@@ -33,7 +33,7 @@ const SkeletonLoading = () => (
 );
 
 export const Dvalorant = () => {
-  const { user } = useUser();
+  useUser();
   const [gameName, setGameName] = useState<string>("");
   const [gameId, setGameId] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
@@ -41,7 +41,6 @@ export const Dvalorant = () => {
   const [rankData, setRankData] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isRegistered, setIsRegistered] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -59,16 +58,22 @@ export const Dvalorant = () => {
     }, 3000);
   };
 
-  // ClerkのユーザーIDを使用
-  const userId = user?.id;
-
   // Cookieからゲーム情報を復元
   useEffect(() => {
     const savedGameName = Cookies.get("game_name");
     const savedGameId = Cookies.get("game_id");
+    const savedApiKey = Cookies.get("api_key");
     if (savedGameName) setGameName(savedGameName);
     if (savedGameId) setGameId(savedGameId);
+    if (savedApiKey) setApiKey(savedApiKey);
   }, []);
+
+  // Cookieにゲーム情報を保存
+  const saveToLocalCookie = useCallback(() => {
+    if (gameName) Cookies.set("game_name", gameName);
+    if (gameId) Cookies.set("game_id", gameId);
+    if (apiKey) Cookies.set("api_key", apiKey);
+  }, [gameName, gameId, apiKey]);
 
   const handleSearch = useCallback(
     async (name: string, tag: string) => {
@@ -86,9 +91,21 @@ export const Dvalorant = () => {
         const response = await fetch(`/api/rank?name=${name}&tag=${tag}`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${encodedApiKey}`, // APIキーをBase64エンコードして送信
+            Authorization: `Basic ${encodedApiKey}`,
           },
         });
+
+        // ステータスコードをチェック
+        if (!response.ok) {
+          throw new Error(
+            `サーバーエラー: ${response.status} - ${response.statusText}`
+          );
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("JSONではないレスポンスを受信しました");
+        }
 
         const data = await response.json();
         if (data.status !== 200) {
@@ -104,138 +121,18 @@ export const Dvalorant = () => {
     [apiKey]
   ); // apiKeyを依存配列に追加
 
-  // プロフィールデータの初期取得を修正
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        if (!userId) return;
-
-        const response = await fetch(`/api/profile?userId=${userId}`);
-        const data = await response.json();
-
-        if (response.ok && data.profile) {
-          setGameName(data.profile.game_name);
-          setGameId(data.profile.game_id);
-          setApiKey(data.profile.api_key || "");
-          setIsRegistered(true);
-        }
-      } catch (error) {
-        console.error("データの取得に失敗しました:", error);
-      }
-    };
-
-    fetchInitialData();
-  }, [userId]); // userIdを依存配列に追加
-
-  // ランク情報の取得を別のuseEffectで管理
-  useEffect(() => {
-    if (isRegistered && gameName && gameId && apiKey) {
-      // すでにランクデータがある場合は再取得しない
-      if (!rankData) {
-        handleSearch(gameName, gameId);
-      }
-    }
-  }, [isRegistered, gameName, gameId, apiKey, rankData, handleSearch]);
-
-  // DynamoDBからAPIキーを取得
-  useEffect(() => {
-    const fetchApiKey = async () => {
-      try {
-        const userId = `${gameName}#${gameId}`;
-        const response = await fetch(`/api/apikey?userId=${userId}`);
-        const data = await response.json();
-        if (data.hashedApiKey) {
-          setApiKey(data.hashedApiKey);
-        }
-      } catch (error) {
-        console.error("APIキーの取得に失敗しました:", error);
-      }
-    };
-
-    if (isRegistered && gameName && gameId) {
-      fetchApiKey();
-    }
-  }, [isRegistered, gameName, gameId]);
-
-  // 登録解除時の処理を修正
-  const handleUnregister = async () => {
-    try {
-      if (!userId) return;
-
-      // プロフィールを初期化
-      const response = await fetch("/api/profile", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("プロフィールの削除に失敗しました");
-      }
-
-      // 状態をリセット
-      setIsRegistered(false);
-      setGameName("");
-      setGameId("");
-      setRankData(null);
-      setApiKey("");
-      Cookies.remove("game_name");
-      Cookies.remove("game_id");
-    } catch (error) {
-      console.error("登録解除に失敗しました:", error);
-      alert("登録解除に失敗しました");
-    }
-  };
-
-  // ゲーム情報とAPIキーを同時に保存
-  const saveGameInfo = async () => {
-    if (!gameName || !gameId || !userId) {
-      showToast("ゲーム名とIDを入力してください", "error");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: userId, // ClerkのユーザーIDを使用
-          clerk_name: user?.username || "anonymous",
-          game_name: gameName,
-          game_id: gameId,
-          // APIキーは任意項目として送信
-          ...(apiKey && { api_key: apiKey.trim() }),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "プロフィールの保存に失敗しました");
-      }
-
-      setIsRegistered(true);
-      showToast("情報を保存しました", "success");
-    } catch (error) {
-      showToast(
-        error instanceof Error ? error.message : "保存に失敗しました",
-        "error"
-      );
-      console.error("Save error:", error);
-    }
-  };
-
   // フォームの送信処理を修正
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await saveGameInfo();
-    if (apiKey && gameName && gameId) {
-      await handleSearch(gameName, gameId);
+    if (!gameName || !gameId || !apiKey) {
+      showToast("全ての情報を入力してください", "error");
+      return;
     }
+
+    // Cookieに保存
+    saveToLocalCookie();
+    await handleSearch(gameName, gameId);
+    showToast("情報を保存しました", "success");
   };
 
   // リフレッシュ機能を修正
@@ -256,19 +153,43 @@ export const Dvalorant = () => {
     }
   };
 
-  // ランク情報の取得を修正
-  useEffect(() => {
-    if (isRegistered && gameName && gameId && apiKey) {
-      // rankDataがnullの時のみ取得
-      if (!rankData) {
-        handleSearch(gameName, gameId);
-      }
-    }
-  }, [isRegistered, gameName, gameId, apiKey, rankData, handleSearch]);
+  // クリア機能
+  const handleClear = () => {
+    setGameName("");
+    setGameId("");
+    setApiKey("");
+    setRankData(null);
+    Cookies.remove("game_name");
+    Cookies.remove("game_id");
+    Cookies.remove("api_key");
+    showToast("情報をクリアしました", "success");
+  };
 
+  // URL生成関数を修正
+  const generateViewUrl = useCallback(() => {
+    if (!gameName || !gameId || !apiKey) return "";
+
+    // URLクエリパラメータにデータを埋め込む
+    const params = new URLSearchParams({
+      game: "valorant",
+      api: encodeURIComponent(apiKey),
+      name: encodeURIComponent(gameName),
+      id: encodeURIComponent(gameId),
+    });
+
+    return `https://game-rank.ichi10.com/view?${params.toString()}`;
+  }, [gameName, gameId, apiKey]);
+
+  // URL表示とコピー機能を修正
   const handleCopyUrl = () => {
+    const url = generateViewUrl();
+    if (!url) {
+      showToast("プレイヤー情報が不足しています", "error");
+      return;
+    }
+
     navigator.clipboard
-      .writeText(`https://game-rank.ichi10.com/view/${userId || ''}`)
+      .writeText(url)
       .then(() => {
         showToast("URLをコピーしました", "success");
       })
@@ -278,13 +199,13 @@ export const Dvalorant = () => {
   };
 
   return (
-    <div className="w-full h-full">
+    <>
       <h1 className="text-2xl font-bold mb-6 dark:text-white">ランク情報</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 左側：フォーム */}
         <div className="p-4 border rounded-lg dark:border-neutral-700">
           <h2 className="text-xl font-semibold mb-4 dark:text-white">
-            {isRegistered ? "プレイヤー情報編集" : "プレイヤー検索"}
+            プレイヤー検索
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -359,17 +280,15 @@ export const Dvalorant = () => {
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
               >
-                {isRegistered ? "更新" : "新規登録"}
+                検索・保存
               </button>
-              {isRegistered && (
-                <button
-                  type="button"
-                  onClick={handleUnregister}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-                >
-                  登録解除
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleClear}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
+              >
+                クリア
+              </button>
             </div>
           </form>
         </div>
@@ -400,12 +319,23 @@ export const Dvalorant = () => {
             <div className="space-y-4 px-4 py-5 bg-gray-100 bg-opacity-75 rounded-lg shadow-lg">
               <div className="bg-gray-400 px-3 py-3 rounded-xl flex">
                 <div>
-                  <Image
-                    src={rankData.data.images.large}
-                    alt=""
-                    width={64}
-                    height={64}
-                  />
+                  {rankData.data.images?.large ? (
+                    <Image
+                      src={rankData.data.images.large}
+                      alt="ランクアイコン"
+                      width={64}
+                      height={64}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/fallback-rank.png"; // 正しいパス
+                        target.onerror = null;
+                      }}
+                    />
+                  ) : (
+                    <div className="w-[64px] h-[64px] bg-gray-300 flex items-center justify-center">
+                      <span className="text-xs text-gray-600">No Image</span>
+                    </div>
+                  )}
                 </div>
                 <div className="w-full">
                   <div className="flex items-end text-white mb-1">
@@ -417,30 +347,29 @@ export const Dvalorant = () => {
                     </p>
                   </div>
                   <div className="relative w-full h-6 rounded-full overflow-hidden bg-gray-200 flex items-center px-3">
-                    <div className="absolute inset-0 flex">
-                      <div
-                        className="bg-purple-500 h-full"
-                        style={{ width: `${rankData.data.ranking_in_tier}%` }}
-                      />
-                      <div
-                        className={`h-full flex items-center justify-center ${
+                    {/* 増減値をプログレスバーのすぐ上中央に表示 - さらに調整 */}
+                    <div className="absolute -top-[0.7] left-1/2 transform -translate-x-1/2 z-20">
+                      <span
+                        className={`font-bold text-xs px-1.5 py-0.5 rounded shadow-sm ${
                           rankData.data.mmr_change_to_last_game >= 0
-                            ? "bg-[#7EFF73]"
+                            ? "text-green-600 bg-white/90"
+                            : "text-red-600 bg-white/90"
+                        }`}
+                      >
+                        {rankData.data.mmr_change_to_last_game >= 0 ? "+" : ""}
+                        {rankData.data.mmr_change_to_last_game}
+                      </span>
+                    </div>
+                    {/* プログレスバー */}
+                    <div className="absolute inset-0 z-10">
+                      <div
+                        className={`h-full ${
+                          rankData.data.mmr_change_to_last_game >= 0
+                            ? "bg-green-500"
                             : "bg-red-500"
                         }`}
-                        style={{
-                          width: `${Math.abs(
-                            rankData.data.mmr_change_to_last_game
-                          )}%`,
-                        }}
-                      >
-                        <span className="text-xs text-black font-bold z-10">
-                          {rankData.data.mmr_change_to_last_game >= 0
-                            ? "+"
-                            : ""}
-                          {rankData.data.mmr_change_to_last_game}
-                        </span>
-                      </div>
+                        style={{ width: `${rankData.data.ranking_in_tier}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -456,7 +385,7 @@ export const Dvalorant = () => {
             <div className="flex">
               <input
                 type="url"
-                value={`https://game-rank.ichi10.com/view/${userId || ''}`}
+                value={generateViewUrl()}
                 className="w-[70%] border rounded-md p-2 dark:bg-neutral-700"
                 readOnly
               />
@@ -467,6 +396,9 @@ export const Dvalorant = () => {
                 コピー
               </button>
             </div>
+            <p className="text-xs text-gray-500 mt-1">
+              ※URLにはAPIキーが含まれています。共有の際はご注意ください。
+            </p>
           </div>
         </div>
       </div>
@@ -476,6 +408,6 @@ export const Dvalorant = () => {
         isVisible={toast.isVisible}
         onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
       />
-    </div>
+    </>
   );
 };
