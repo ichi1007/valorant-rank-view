@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -14,7 +15,16 @@ interface RankData {
   };
 }
 
-export default function ViewComponent() {
+export default function ViewPage() {
+  return (
+    <Suspense fallback={<div className="p-3">Loading...</div>}>
+      <ViewContent />
+    </Suspense>
+  );
+}
+
+// useSearchParams()を使用するコンポーネントを分離
+function ViewContent() {
   const searchParams = useSearchParams();
   const [rankData, setRankData] = useState<RankData | null>(null);
   const [loading, setLoading] = useState(true);
